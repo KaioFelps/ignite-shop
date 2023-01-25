@@ -5,6 +5,7 @@ export const HomeContainer = styled("main", {
     // display: "flex",
     // gap: "3rem", ATRAPALHA O KEEN-SLIDER
 
+    position: "relative",
     width: "calc(100% - 40px)",
     maxWidth: "100%",
     minHeight: 656,
@@ -62,6 +63,48 @@ export const Product = styled(Link, {
         footer: {
             transform: "translateY(0)",
             opacity: 1,
+        },
+    }
+})
+
+export const SliderNavContainer = styled("div", {
+    width: "calc(100vw - 32px)",
+    height: "100%",
+    display: "grid",
+    gridAutoFlow: "column",
+    alignItems: "center",
+    pointerEvents: "none",
+
+    position: "absolute",
+    marginInline: 16,
+})
+
+export const SliderNavButton = styled("button", {
+    display: "block",
+    alignSelf: "center",
+    border: 0,
+    boxSizing: "content-box",
+    padding: 8,
+    borderRadius: 999,
+    background: "rgba(0, 0, 0, 0)",
+    transition: "all 150ms",
+    outlineColor: "rgba(255, 255, 255, 0.25)",
+    pointerEvents: "auto",
+
+    "&:hover": {
+        background: "rgba(0, 0, 0, 0.05)",
+        
+
+        "@supports(backdrop-filter: blur(10px))": {
+            backdropFilter: "blur(10px)"
+        },
+    },
+
+    "&:focus": {
+        outline: "solid 2px rgba(255, 255, 255, 0.25)",
+        
+        "@supports(backdrop-filter: blur(10px))": {
+            backdropFilter: "blur(10px)"
         },
     }
 })

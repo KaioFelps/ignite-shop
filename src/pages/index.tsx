@@ -1,13 +1,15 @@
 import "keen-slider/keen-slider.min.css"
 
 import Image from "next/legacy/image"
-import { HomeContainer, Product } from "../styles/pages/home"
+import { HomeContainer, Product, SliderNavButton, SliderNavContainer } from "../styles/pages/home"
 import { stripe } from "../lib/stripe"
 import Stripe from "stripe"
 import { GetStaticProps } from "next"
 
-import { useKeenSlider } from "keen-slider/react"
+import { useKeenSlider, KeenSliderHooks, KeenSliderInstance } from "keen-slider/react"
 import Head from "next/head"
+import { CaretLeft, CaretRight } from "phosphor-react"
+import { useEffect, useState } from "react"
 
 type HomeProps = {
   products: {
@@ -20,13 +22,31 @@ type HomeProps = {
 }
 
 export default function Home({products}: HomeProps) {
-  const [sliderRef] = useKeenSlider({
+  const [ currentSlideIndex, setCurrentSlideIndex ] = useState(0)
+
+  const [sliderRef, slideInstance] = useKeenSlider({
     slides: {
       perView: 2,
       spacing: 48,
       origin: "center",
     },
+    // created: slide => slidesLength = slide.track.details.slides.length,
+    slideChanged: slide => setCurrentSlideIndex(slide.track.details.abs),
   })
+
+  const slidesLength = slideInstance.current?.track.details.slides.length! - 1
+
+  const isFirstButtonVisible = currentSlideIndex !== 0
+  const isLastButtonVisible = currentSlideIndex !== slidesLength
+
+  const slidesController = {
+    nextSlide() {
+      slideInstance.current?.next()
+    },
+    prevSlide() {
+      slideInstance.current?.prev()
+    }
+  }
 
   return (
     <>
@@ -60,6 +80,20 @@ export default function Home({products}: HomeProps) {
             </Product>
           )
         })}
+
+        <SliderNavContainer>
+          { isFirstButtonVisible &&
+            <SliderNavButton onClick={slidesController.prevSlide} style={{justifySelf: "flex-start"}}>
+              <CaretLeft size={48} weight="bold" color="white" />
+            </SliderNavButton>
+          }
+
+          { isLastButtonVisible &&
+            <SliderNavButton onClick={slidesController.nextSlide} style={{justifySelf: "flex-end"}}>
+              <CaretRight size={48} weight="bold" color="white" />
+            </SliderNavButton>
+          }
+        </SliderNavContainer>
       </HomeContainer>
     </>
   )
