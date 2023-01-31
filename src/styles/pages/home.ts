@@ -13,21 +13,8 @@ export const HomeContainer = styled("main", {
     // marginLeft: "auto",
 })
 
-export const Product = styled(Link, {
-    background: "linear-gradient(100deg, #1ea483 0%, #7465d4 100%)",
-    borderRadius: 8,
-    // padding: "0.25rem", ATRAPALHA O KEEN-SLIDER
-    cursor: "pointer",
+export const ProductWrapper = styled("div", {
     position: "relative",
-    overflow: "hidden",
-
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-
-    img: {
-        objectFit: "cover",
-    },
 
     footer: {
         position: "absolute",
@@ -65,6 +52,25 @@ export const Product = styled(Link, {
             opacity: 1,
         },
     }
+})
+
+export const Product = styled(Link, {
+    background: "linear-gradient(100deg, #1ea483 0%, #7465d4 100%)",
+    borderRadius: 8,
+    // padding: "0.25rem", ATRAPALHA O KEEN-SLIDER
+    cursor: "pointer",
+    position: "relative",
+    overflow: "hidden",
+
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+
+    height: "100%",
+
+    img: {
+        objectFit: "cover",
+    },
 })
 
 export const SliderNavContainer = styled("div", {
@@ -107,4 +113,10 @@ export const SliderNavButton = styled("button", {
             backdropFilter: "blur(10px)"
         },
     }
+})
+
+export const InfosColumn = styled("div", {
+    display: "flex",
+    flexDirection: "column",
+    gap: 4,
 })

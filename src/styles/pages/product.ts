@@ -58,6 +58,8 @@ export const ProductDetails = styled("div", {
         borderRadius: 8,
         padding: "1.25rem",
         cursor: "default",
+        textTransform: "none",
+        lineHeight: "initial",
         
         fontSize: "$md",
         fontWeight: "regular",

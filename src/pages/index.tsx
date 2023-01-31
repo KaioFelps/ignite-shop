@@ -1,15 +1,17 @@
 import "keen-slider/keen-slider.min.css"
 
 import Image from "next/legacy/image"
-import { HomeContainer, Product, SliderNavButton, SliderNavContainer } from "../styles/pages/home"
+import { HomeContainer, InfosColumn, Product, ProductWrapper, SliderNavButton, SliderNavContainer } from "../styles/pages/home"
 import { stripe } from "../lib/stripe"
 import Stripe from "stripe"
 import { GetStaticProps } from "next"
 
 import { useKeenSlider, KeenSliderHooks, KeenSliderInstance } from "keen-slider/react"
 import Head from "next/head"
-import { CaretLeft, CaretRight } from "phosphor-react"
-import { useEffect, useState } from "react"
+import { CaretLeft, CaretRight, Handbag } from "phosphor-react"
+import { useContext, useEffect, useState } from "react"
+import { Button } from "@mui/material"
+import { CartContext } from "../contexts/CartContext"
 
 type HomeProps = {
   products: {
@@ -23,6 +25,8 @@ type HomeProps = {
 
 export default function Home({products}: HomeProps) {
   const [ currentSlideIndex, setCurrentSlideIndex ] = useState(0)
+  const [ isAddingToCart, setIsAddingToCart ] = useState(false)
+  const { addProductToCart } = useContext(CartContext)
 
   const [sliderRef, slideInstance] = useKeenSlider({
     slides: {
@@ -48,6 +52,14 @@ export default function Home({products}: HomeProps) {
     }
   }
 
+  function handleAddToCarT(id: string) {
+    setIsAddingToCart(true)
+    setTimeout(() => {
+      addProductToCart(id)
+      setIsAddingToCart(false)
+    }, 2000)
+  }
+
   return (
     <>
       <Head>
@@ -59,25 +71,48 @@ export default function Home({products}: HomeProps) {
       <HomeContainer ref={sliderRef} className="keen-slider">
         {products.map(product => {
           return (
-            <Product
+            <ProductWrapper
               key={product.id}
-              href={`/product/${product.id}`}
               className="keen-slider__slide"
-              prefetch={false}
             >
-              <Image
-                draggable={false}
-                src={product.imageUrl}
-                width={520}
-                height={480}
-                alt=""
-              />
-
+              <Product
+                href={`/product/${product.id}`}
+                prefetch={false}
+              >
+                <Image
+                  draggable={false}
+                  src={product.imageUrl}
+                  width={520}
+                  height={480}
+                  alt=""
+                />
+              </Product>
               <footer>
-                <strong>{product.name}</strong>
-                <span>{product.price}</span>
-              </footer>
-            </Product>
+                  <InfosColumn>
+                    <strong>{product.name}</strong>
+                    <span>{product.price}</span>
+                  </InfosColumn>
+
+                  <Button
+                  sx={{
+                    color: "white",
+                    background: "#00875F",
+                    borderRadius: 2,
+                    padding: 1.5,
+                    minWidth: 0,
+
+                    "&:hover": {
+                      background: "#00875F",
+                    },
+                  }}
+                  type="button"
+                  disabled={isAddingToCart}
+                  onClick={() => handleAddToCarT(product.id)}
+                  >
+                    <Handbag size={24} weight="bold" />
+                  </Button>
+                </footer>
+            </ProductWrapper>
           )
         })}
 

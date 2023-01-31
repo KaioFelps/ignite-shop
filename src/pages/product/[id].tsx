@@ -5,10 +5,12 @@ import { useRouter } from "next/router"
 import Stripe from "stripe"
 import { stripe } from "../../lib/stripe"
 import { ImageContainer, ProductContainer, ProductDetails } from "../../styles/pages/product"
-import { useState } from "react"
+import { useContext, useState } from "react"
 
 import CircularProgress from '@mui/material/CircularProgress';
 import Head from "next/head"
+import { Button } from "@mui/material"
+import { CartContext } from "../../contexts/CartContext"
 
 type ProductProps = {
     product: {
@@ -24,35 +26,46 @@ type ProductProps = {
 export default function Product({product}: ProductProps) {
     const { isFallback } = useRouter()
     const [isCreatingCheckoutSession, setIsCreatingCheckoutSession] = useState(false)
+    const { addProductToCart } = useContext(CartContext)
 
     if(isFallback) {
         return <h1>Carregando página</h1>
     }
 
-    async function handlePurchaseProduct() {
 
-        try {
-            setTimeout(() => {console.log("load")}, 5000)
-            setIsCreatingCheckoutSession(true)
-            const response = await axios.post("/api/checkout", {
-                priceId: product.defaultPriceId
-            })
+    // async function handlePurchaseProduct() {
 
-            const { checkoutUrl } = response.data
+    //     try {
+    //         setTimeout(() => {console.log("load")}, 5000)
+    //         setIsCreatingCheckoutSession(true)
+    //         const response = await axios.post("/api/checkout", {
+    //             priceId: product.defaultPriceId
+    //         })
 
-            /*
-            PARA REDIRECIONAR INTERNAMENTE USAMOS:
-            const router = useRouter()
+    //         const { checkoutUrl } = response.data
 
-            router.push("/path")
-            */
-           window.location.href = checkoutUrl
-        } catch(err) {
-            // deve conectar com uma ferramenta de observabilidade (Datadog / Sentry)
+    //         /*
+    //         PARA REDIRECIONAR INTERNAMENTE USAMOS:
+    //         const router = useRouter()
 
+    //         router.push("/path")
+    //         */
+    //        window.location.href = checkoutUrl
+    //     } catch(err) {
+    //         // deve conectar com uma ferramenta de observabilidade (Datadog / Sentry)
+
+    //         setIsCreatingCheckoutSession(false)
+    //         alert("Falha ao redirecionar ao checkout.")
+    //     }
+    // }
+
+    async function handleAddToCart() {
+        setIsCreatingCheckoutSession(true)
+        setTimeout(() => {
+            addProductToCart(product.id)
             setIsCreatingCheckoutSession(false)
-            alert("Falha ao redirecionar ao checkout.")
-        }
+        }, 2000)
+        
     }
 
     return (
@@ -73,13 +86,13 @@ export default function Product({product}: ProductProps) {
                 <span>{product.price}</span>
 
                 <p>{product.description}</p>
-                <button type="button" disabled={isCreatingCheckoutSession} onClick={handlePurchaseProduct}>
+                <Button type="button" disabled={isCreatingCheckoutSession} onClick={handleAddToCart}>
                     {isCreatingCheckoutSession ?
                         <CircularProgress color="primary" size={21} variant="indeterminate" />
                     : 
-                        "Comprar agora"
+                        "Adicionar à sacola"
                     }
-                </button>
+                </Button>
             </ProductDetails>
         </ProductContainer>
         </>
