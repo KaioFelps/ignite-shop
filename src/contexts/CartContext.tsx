@@ -1,6 +1,6 @@
 import { createContext, ReactNode, useState } from "react";
 
-type CartProductPropsType = {
+export type CartProductPropsType = {
     id: string;
     quantity: number;
 }
@@ -28,7 +28,7 @@ export function CartContextProvider({children}: {children: ReactNode}) {
 
     function addProductToCart(id: string) {
         const quantity = getProductQuantity(id)
-
+        
         if(quantity === 0) {
             setCartProducts(prevState => [...prevState, {
                 id,
@@ -41,12 +41,13 @@ export function CartContextProvider({children}: {children: ReactNode}) {
                     if(product.id !== id) {
                         return product
                     }
-
-                    const newProduct = {
-                        id: product.id,
-                        quantity: product.quantity + 1
+                    else {
+                        const newProduct = {
+                            id: product.id,
+                            quantity: product.quantity + 1
+                        }
+                        return newProduct
                     }
-                    return newProduct
                 })
             )
         }
@@ -55,7 +56,7 @@ export function CartContextProvider({children}: {children: ReactNode}) {
     function removeProductFromCart(id: string) {
         const quantity = getProductQuantity(id)
 
-        if(quantity >= 1) {
+        if(quantity <= 1) {
             setCartProducts(prevState => prevState.filter(product => product.id !== id))
         }
         else {
@@ -77,7 +78,16 @@ export function CartContextProvider({children}: {children: ReactNode}) {
     }
 
     function getProductsLength() {
-        return cartProducts.length
+        if(cartProducts.length <= 0) {
+            return 0;
+        }
+
+        const productsInCart = cartProducts.reduce((accumulator: number, product: CartProductPropsType) => {
+            accumulator += product.quantity
+            return accumulator
+        }, 0)
+
+        return productsInCart
     }
 
     const contextValue = {
@@ -87,7 +97,7 @@ export function CartContextProvider({children}: {children: ReactNode}) {
         removeProductFromCart,
         getProductsLength,
         // getTotalCost: () => {},
-    }
+    } as CartContextPropsType
 
     return (
         <CartContext.Provider value={contextValue}>

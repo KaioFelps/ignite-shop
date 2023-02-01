@@ -1,3 +1,4 @@
+import { IconButton, SwipeableDrawer } from "@mui/material"
 import { styled } from ".."
 
 export const HeaderContainer = styled("header", {
@@ -32,4 +33,28 @@ export const CartChip = styled("span", {
     transform: "translate(50%, -50%)",
     border: "2px solid $gray-900",
     zIndex: 1,
+})
+
+export const ShopCartDrawer = styled(SwipeableDrawer, {
+    ".MuiPaper-root": {
+        background: "$gray-800",
+        padding: 48,
+        color: "$gray-100",
+
+        width: "100%",
+        maxWidth: 480,
+    },
+
+    h2: {
+        fontSize: "$lg",
+        marginBottom: 40,
+    },
+})
+
+export const CloseShopCartDrawerButton = styled(IconButton, {
+    color: "$gray-300",
+    padding: 12,
+    maxWidth: 48,
+
+    alignSelf: "flex-end",
 })

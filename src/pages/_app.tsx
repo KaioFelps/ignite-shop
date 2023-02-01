@@ -1,8 +1,9 @@
 import type { AppProps } from 'next/app'
 import { globalStyles } from '../styles/global'
 import { Container } from '../styles/pages/app'
-import { CartContextProvider } from '../contexts/CartContext'
+import { CartContext, CartContextProvider } from '../contexts/CartContext'
 import { Header } from '../components/Header'
+import { useContext, useEffect } from 'react'
 
 globalStyles()
 
