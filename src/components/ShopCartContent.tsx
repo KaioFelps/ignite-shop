@@ -1,11 +1,11 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import { memo, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { CartContext } from "../contexts/CartContext";
 import { CartFooter, CartMainContainer, FinishPurchaseButton, QuantityRow, ValueRow } from "../styles/components/CartContent";
 
 import type {CartProductPropsType} from "../contexts/CartContext"
 import axios from "axios";
 import { Skeleton } from "@mui/material";
-import { ShopProductCard } from "./ShopProductCard";
+import { ShopProductCard, ShopProductSkeleton } from "./ShopProductCard";
 
 type ProductDataPropsType = {
     id: string;
@@ -22,40 +22,43 @@ export function ShopCartContent() {
     const [ productsData, setProductsData ] = useState<ProductDataPropsType[]>([])
     const [ isFetchingData, setIsFetchingData ] = useState(false)
 
-    // useEffect(() => {
-    //     if (productsList.length <= 0) {
-    //         return;
-    //     }
+    const updateProductsData = useCallback(() => {
+        let newList: ProductDataPropsType[] = []
 
-    //     setIsFetchingData(true)
+        productsList.map(async (prod) => {
+            const response = await axios.get(`/api/getproduct/${prod.id}`)
+            const data = await response.data
 
-    //     productsList.forEach(async (product) => {
-    //         if(product.id === "") {
-    //             return;
-    //         }
+            const productFromInitialList = productsList.find(product => product.id === data.id)
+            
+            newList.push({
+                ...data,
+                quantity: productFromInitialList!.quantity ?? 0
+            })
+        })
 
-    //         const response = await axios.get(`/api/getproduct/${product.id}`)
-    //         const data = await response.data
+        setProductsData(newList)
+    }, [productsList])
 
-    //         setProductsData(prevState => {
-    //             const quantity = productsList.find(listedProduct => listedProduct.id === product.id)?.quantity
+    useEffect(() => {
+        if (productsList.length <= 0) {
+            return;
+        }
 
-    //             if(prevState.find(product => product.id === data.id)) {
-    //                 return [...prevState, {...data, quantity}]
-    //             }
+        setIsFetchingData(true)
 
-    //             return [...prevState, {}]
-    //         })
-    //     })
+        updateProductsData()
 
-    //     setIsFetchingData(false)
-    // }, [productsList])
+        setTimeout(() => {
+            setIsFetchingData(false)
+        }, 1000)
+    }, [productsList, updateProductsData])
 
     return (
         <>
             <CartMainContainer>
                 {isFetchingData ?
-                <Skeleton />
+                    <ShopProductSkeleton />
                 :
                 productsData.length >= 1 ?
                     productsData.map((product, index) => {
