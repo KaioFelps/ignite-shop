@@ -1,58 +1,95 @@
-import { memo, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { CartContext } from "../contexts/CartContext";
 import { CartFooter, CartMainContainer, FinishPurchaseButton, QuantityRow, ValueRow } from "../styles/components/CartContent";
 
-import type {CartProductPropsType} from "../contexts/CartContext"
 import axios from "axios";
-import { Skeleton } from "@mui/material";
 import { ShopProductCard, ShopProductSkeleton } from "./ShopProductCard";
 
 type ProductDataPropsType = {
     id: string;
     name: string;
     imageUrl: string;
-    price: string;
+    convertedPrice: string;
+    defaultPrice: number;
     defaultPriceId: number;
     description: string;
     quantity: number;
 }
 
 export function ShopCartContent() {
-    const { productsList } = useContext(CartContext)
+    const { productsList, getProductsLength } = useContext(CartContext)
+    const [ productsAmount, setProductsAmount ] = useState(0)
     const [ productsData, setProductsData ] = useState<ProductDataPropsType[]>([])
     const [ isFetchingData, setIsFetchingData ] = useState(false)
+    const [ isCalculatingPrice, setIsCalculatingPrice ] = useState(false)
+    const [ formattedTotalPrice, setFormattedTotalPrice ] = useState("")
 
     const updateProductsData = useCallback(() => {
-        let newList: ProductDataPropsType[] = []
-
-        productsList.map(async (prod) => {
-            const response = await axios.get(`/api/getproduct/${prod.id}`)
-            const data = await response.data
-
-            const productFromInitialList = productsList.find(product => product.id === data.id)
-            
-            newList.push({
-                ...data,
-                quantity: productFromInitialList!.quantity ?? 0
-            })
-        })
-
-        setProductsData(newList)
-    }, [productsList])
-
-    useEffect(() => {
-        if (productsList.length <= 0) {
-            return;
+        if(productsAmount <= 0) {
+            setProductsData([])
         }
 
+        else {
+            let newList: ProductDataPropsType[] = []
+    
+            productsList.map(async (prod) => {
+                const response = await axios.get(`/api/getproduct/${prod.id}`)
+                const data = await response.data
+    
+                const productFromInitialList = productsList.find(product => product.id === data.id)
+                
+                newList.push({
+                    ...data,
+                    quantity: productFromInitialList!.quantity ?? 0
+                })
+            })
+    
+            setProductsData(newList)
+        }
+
+    }, [productsList, productsAmount])
+    
+    useEffect(() => {
+        setProductsAmount(getProductsLength())
         setIsFetchingData(true)
 
         updateProductsData()
-
+        
         setTimeout(() => {
             setIsFetchingData(false)
         }, 1000)
-    }, [productsList, updateProductsData])
+    }, [productsList, updateProductsData, getProductsLength])
+
+    // TODO: sum prices and put it
+    // useEffect(() => {
+    //     setTimeout(() => {
+    //         setIsCalculatingPrice(true)
+
+    //         if(productsAmount === 0) {
+    //             setFormattedTotalPrice("R$ 0,00")
+    //             console.log("0 itens no carrinho")
+    //         }
+
+    //         else {
+    //             const summedPrices = productsData.reduce((acc: number, product: ProductDataPropsType) => {
+    //                 const price = product.defaultPrice * product.quantity
+    //                 return acc += price
+    //                 console.log(product)
+    //             }, 0)
+        
+
+    //             const formattedPrice = summedPrices.toLocaleString("pt-br", {
+    //                 currency: "BRL",
+    //                 style: "currency",
+    //             })
+        
+    //             setFormattedTotalPrice(formattedPrice)
+    //         }
+            
+        
+    //         setIsCalculatingPrice(false)
+    //     }, 2000)
+    // }, [])
 
     return (
         <>
@@ -66,9 +103,12 @@ export function ShopCartContent() {
                             <ShopProductCard
                                 key={index}
                                 imageUrl={product.imageUrl}
-                                price={product.price}
+                                price={product.convertedPrice}
                                 title={product.name}
                                 quantity={product.quantity}
+                                id={product.id}
+                                fnSetIsLoading={(isLoading: boolean) => setIsFetchingData(isLoading)}
+                                fnUpdateList={updateProductsData}
                             />
                         )
                     })
@@ -80,12 +120,12 @@ export function ShopCartContent() {
             <CartFooter>
             <QuantityRow>
                 <label>Quantidade</label>
-                <span>3 itens</span>
+                <span>{productsAmount} itens</span>
             </QuantityRow>
 
             <ValueRow>
                 <label>Valor total</label>
-                <span>R$ 270,00</span>
+                <span>{isCalculatingPrice ? "..." : formattedTotalPrice}</span>
             </ValueRow>
 
             <FinishPurchaseButton>

@@ -56,7 +56,7 @@ export function CartContextProvider({children}: {children: ReactNode}) {
     function removeProductFromCart(id: string) {
         const quantity = getProductQuantity(id)
 
-        if(quantity <= 1) {
+        if(quantity == 1) {
             setCartProducts(prevState => prevState.filter(product => product.id !== id))
         }
         else {

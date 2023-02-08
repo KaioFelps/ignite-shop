@@ -42,7 +42,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         id: product.id,
         name: product.name,
         imageUrl: product.images[0],
-        price: convertedPrice,
+        convertedPrice: convertedPrice,
+        defaultPrice: price.unit_amount! / 100,
         defaultPriceId: price.id,
         description: product.description,
     })

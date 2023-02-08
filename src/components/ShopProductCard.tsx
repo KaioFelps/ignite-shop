@@ -1,4 +1,6 @@
 import Skeleton from "@mui/material/Skeleton";
+import { useContext } from "react";
+import { CartContext } from "../contexts/CartContext";
 import { ProductCardContainer, ProductCardFooter, ProductImage, ProductInfos, RemoveProductButton, SkeletonInfos } from "../styles/components/ShopProductCard";
 
 type ShopProductCardProps = {
@@ -6,9 +8,25 @@ type ShopProductCardProps = {
     price: string;
     imageUrl: string;
     quantity: number;
+    id: string;
+    fnSetIsLoading: (isLoading: boolean) => void;
+    fnUpdateList: () => void;
 }
 
-export function ShopProductCard({imageUrl = "", price = "R$ 0,00", quantity = 0, title = "" }: ShopProductCardProps) {
+export function ShopProductCard({imageUrl = "", price = "R$ 0,00", quantity = 0, title = "", id, fnSetIsLoading, fnUpdateList }: ShopProductCardProps) {
+    const { removeProductFromCart } = useContext(CartContext)
+
+    function handleDeleteProduct() {
+        fnSetIsLoading(true)
+
+        removeProductFromCart(id)
+        fnUpdateList()
+
+        setTimeout(() => {
+            fnSetIsLoading(false)
+        }, 1000)
+    }
+
     return (
         <ProductCardContainer>
             <ProductImage src={imageUrl} alt="" width={100} height={100} />
@@ -19,7 +37,11 @@ export function ShopProductCard({imageUrl = "", price = "R$ 0,00", quantity = 0,
 
                 <ProductCardFooter>
                     <span>{quantity}</span>
-                    <RemoveProductButton variant="text">
+                    <RemoveProductButton
+                        variant="text"
+                        color="success"
+                        onClick={handleDeleteProduct}
+                    >
                         Remover unidade
                     </RemoveProductButton>
                 </ProductCardFooter>

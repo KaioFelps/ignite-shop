@@ -78,7 +78,7 @@ export function Header() {
             
             <h2>Sacola de compras</h2>
 
-            <ShopCartContent />
+            {drawerIsOpen && <ShopCartContent />}
 
           </ShopCartDrawer>
         </HeaderContainer>
