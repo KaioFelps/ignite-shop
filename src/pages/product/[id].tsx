@@ -36,7 +36,7 @@ export default function Product({product}: ProductProps) {
     async function handleAddToCart() {
         setIsCreatingCheckoutSession(true)
         setTimeout(() => {
-            addProductToCart(product.id, product.defaultPrice)
+            addProductToCart(product.id, product.defaultPrice, product.defaultPriceId)
             setIsCreatingCheckoutSession(false)
         }, 2000)
         

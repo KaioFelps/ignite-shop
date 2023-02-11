@@ -19,9 +19,10 @@ type ProductDataPropsType = {
 export function ShopCartContent() {
     const { productsList, getProductsLength } = useContext(CartContext)
     const [ productsAmount, setProductsAmount ] = useState(0)
-    const [ productsData, setProductsData ] = useState<ProductDataPropsType[]>([])
     const [ isFetchingData, setIsFetchingData ] = useState(false)
+    const [ isPurchasing, setIsPurchasing ] = useState(false)
     const [ formattedTotalPrice, setFormattedTotalPrice ] = useState("")
+    const [ productsData, setProductsData ] = useState<ProductDataPropsType[]>([])
 
     const updateProductsData = useCallback(() => {
         if(productsAmount <= 0) {
@@ -65,6 +66,31 @@ export function ShopCartContent() {
         })
 
         return formattedPrice
+    }, [productsList])
+
+    const handlePurchaseProducts = useCallback(async() => {
+        try {
+            setIsPurchasing(true)
+            const newProductsList = productsList.map(({priceId, quantity}) => {
+                return {
+                    price: priceId,
+                    quantity
+                }
+            })
+
+            const response = await axios.post("/api/checkout", {
+                productsList: newProductsList,
+            })
+
+            const { checkoutUrl } = response.data
+            window.location.href = checkoutUrl
+        }
+        catch(error) {
+            console.log(error)
+        }
+        finally {
+            setIsPurchasing(false)
+        }
     }, [productsList])
     
     useEffect(() => {
@@ -116,7 +142,7 @@ export function ShopCartContent() {
                 <span>{isFetchingData ? "..." : formattedTotalPrice}</span>
             </ValueRow>
 
-            <FinishPurchaseButton>
+            <FinishPurchaseButton disabled={isPurchasing || productsList.length === 0} onClick={handlePurchaseProducts}>
                 Finalizar compra
             </FinishPurchaseButton>
             </CartFooter>

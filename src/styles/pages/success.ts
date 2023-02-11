@@ -18,6 +18,7 @@ export const SuccessContainer = styled("main", {
         fontSize: "$xl",
         color: "$gray-300",
         maxWidth: 656,
+        marginTop: 24,
         textAlign: "center",
         lineHeight: 1.4,
 
@@ -50,12 +51,10 @@ export const SuccessContainer = styled("main", {
 })
 
 export const ImageContainer = styled("div", {
-    width: "100%",
-    maxWidth: 130,
-    minHeight: "145px",
-    maxHeight: "145px",
+    width: 140,
+    height: 140,
     background: "linear-gradient(100deg, #1ea483 0%, #7465d4 100%)",
-    borderRadius: 8,
+    borderRadius: 999,
     padding: "0.25erm",
     
     display: "flex",
@@ -65,5 +64,17 @@ export const ImageContainer = styled("div", {
 
     img: {
         objectFit: "none",
+    }
+})
+
+export const ProductImagesWrapper = styled("div", {
+    display: "flex",
+    
+    "& > *": {
+        zIndex: 0,
+
+        "&:not(:first-child)": {
+            marginLeft: -48,
+        }
     }
 })
