@@ -1,7 +1,7 @@
 import Skeleton from "@mui/material/Skeleton";
 import { useContext } from "react";
 import { CartContext } from "../contexts/CartContext";
-import { ProductCardContainer, ProductCardFooter, ProductImage, ProductInfos, RemoveProductButton, SkeletonInfos } from "../styles/components/ShopProductCard";
+import { ProductCardContainer, ProductCardFooter, ProductImage, ProductInfos, ProductQuantities, RemoveProductButton, SkeletonInfos } from "../styles/components/ShopProductCard";
 
 type ShopProductCardProps = {
     title: string;
@@ -36,7 +36,7 @@ export function ShopProductCard({imageUrl = "", price = "R$ 0,00", quantity = 0,
                 <strong>{price}</strong>
 
                 <ProductCardFooter>
-                    <span>{quantity}</span>
+                    <ProductQuantities>{quantity}</ProductQuantities>
                     <RemoveProductButton
                         variant="text"
                         color="success"

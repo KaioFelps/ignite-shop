@@ -18,6 +18,7 @@ type ProductProps = {
         name: string;
         imageUrl: string;
         price: string;
+        defaultPrice: number;
         defaultPriceId: string;
         description: string;
     }
@@ -32,37 +33,10 @@ export default function Product({product}: ProductProps) {
         return <h1>Carregando página</h1>
     }
 
-
-    // async function handlePurchaseProduct() {
-
-    //     try {
-    //         setTimeout(() => {console.log("load")}, 5000)
-    //         setIsCreatingCheckoutSession(true)
-    //         const response = await axios.post("/api/checkout", {
-    //             priceId: product.defaultPriceId
-    //         })
-
-    //         const { checkoutUrl } = response.data
-
-    //         /*
-    //         PARA REDIRECIONAR INTERNAMENTE USAMOS:
-    //         const router = useRouter()
-
-    //         router.push("/path")
-    //         */
-    //        window.location.href = checkoutUrl
-    //     } catch(err) {
-    //         // deve conectar com uma ferramenta de observabilidade (Datadog / Sentry)
-
-    //         setIsCreatingCheckoutSession(false)
-    //         alert("Falha ao redirecionar ao checkout.")
-    //     }
-    // }
-
     async function handleAddToCart() {
         setIsCreatingCheckoutSession(true)
         setTimeout(() => {
-            addProductToCart(product.id)
+            addProductToCart(product.id, product.defaultPrice)
             setIsCreatingCheckoutSession(false)
         }, 2000)
         
@@ -130,6 +104,7 @@ export const getStaticProps: GetStaticProps<any, { id: string; }> = async ({para
                 name: product.name,
                 imageUrl: product.images[0],
                 price: convertedPrice,
+                defaultPrice: price.unit_amount! / 100,
                 defaultPriceId: price.id,
                 description: product.description,
             }

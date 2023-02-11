@@ -1,5 +1,5 @@
 import { useCallback, useContext, useEffect, useState } from "react";
-import { CartContext } from "../contexts/CartContext";
+import { CartContext, CartProductPropsType } from "../contexts/CartContext";
 import { CartFooter, CartMainContainer, FinishPurchaseButton, QuantityRow, ValueRow } from "../styles/components/CartContent";
 
 import axios from "axios";
@@ -21,7 +21,6 @@ export function ShopCartContent() {
     const [ productsAmount, setProductsAmount ] = useState(0)
     const [ productsData, setProductsData ] = useState<ProductDataPropsType[]>([])
     const [ isFetchingData, setIsFetchingData ] = useState(false)
-    const [ isCalculatingPrice, setIsCalculatingPrice ] = useState(false)
     const [ formattedTotalPrice, setFormattedTotalPrice ] = useState("")
 
     const updateProductsData = useCallback(() => {
@@ -46,50 +45,39 @@ export function ShopCartContent() {
     
             setProductsData(newList)
         }
-
     }, [productsList, productsAmount])
+
+    const getFormattedTotalPrice = useCallback(() => {
+        if(productsList.length === 0) {
+            return "R$ 0,00";
+        }
+
+        const summedPrices = productsList.reduce(
+            (acc: number, product: CartProductPropsType) => {
+                const price = product.price * product.quantity
+                return acc += price
+            }, 0
+        )
+
+        const formattedPrice = summedPrices.toLocaleString("pt-br", {
+            currency: "BRL",
+            style: "currency",
+        })
+
+        return formattedPrice
+    }, [productsList])
     
     useEffect(() => {
         setProductsAmount(getProductsLength())
         setIsFetchingData(true)
 
         updateProductsData()
+        setFormattedTotalPrice(getFormattedTotalPrice())
         
         setTimeout(() => {
             setIsFetchingData(false)
         }, 1000)
-    }, [productsList, updateProductsData, getProductsLength])
-
-    // TODO: sum prices and put it
-    // useEffect(() => {
-    //     setTimeout(() => {
-    //         setIsCalculatingPrice(true)
-
-    //         if(productsAmount === 0) {
-    //             setFormattedTotalPrice("R$ 0,00")
-    //             console.log("0 itens no carrinho")
-    //         }
-
-    //         else {
-    //             const summedPrices = productsData.reduce((acc: number, product: ProductDataPropsType) => {
-    //                 const price = product.defaultPrice * product.quantity
-    //                 return acc += price
-    //                 console.log(product)
-    //             }, 0)
-        
-
-    //             const formattedPrice = summedPrices.toLocaleString("pt-br", {
-    //                 currency: "BRL",
-    //                 style: "currency",
-    //             })
-        
-    //             setFormattedTotalPrice(formattedPrice)
-    //         }
-            
-        
-    //         setIsCalculatingPrice(false)
-    //     }, 2000)
-    // }, [])
+    }, [productsList, updateProductsData, getProductsLength, getFormattedTotalPrice])
 
     return (
         <>
@@ -125,7 +113,7 @@ export function ShopCartContent() {
 
             <ValueRow>
                 <label>Valor total</label>
-                <span>{isCalculatingPrice ? "..." : formattedTotalPrice}</span>
+                <span>{isFetchingData ? "..." : formattedTotalPrice}</span>
             </ValueRow>
 
             <FinishPurchaseButton>

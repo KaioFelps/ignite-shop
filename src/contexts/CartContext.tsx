@@ -2,16 +2,16 @@ import { createContext, ReactNode, useState } from "react";
 
 export type CartProductPropsType = {
     id: string;
+    price: number;
     quantity: number;
 }
 
 type CartContextPropsType = {
     productsList: CartProductPropsType[],
     getProductQuantity: (id: string) => number,
-    addProductToCart: (id: string) => void,
+    addProductToCart: (id: string, price: number) => void,
     removeProductFromCart: (id: string) => void,
     getProductsLength: () => number,
-    // getTotalCost: () => {},
 }
 
 export const CartContext = createContext({} as CartContextPropsType)
@@ -26,12 +26,13 @@ export function CartContextProvider({children}: {children: ReactNode}) {
         return quantity
     }
 
-    function addProductToCart(id: string) {
+    function addProductToCart(id: string, price: number) {
         const quantity = getProductQuantity(id)
         
         if(quantity === 0) {
             setCartProducts(prevState => [...prevState, {
                 id,
+                price,
                 quantity: 1,
             }])
         }
@@ -42,11 +43,11 @@ export function CartContextProvider({children}: {children: ReactNode}) {
                         return product
                     }
                     else {
-                        const newProduct = {
+                        return {
                             id: product.id,
+                            price: product.price,
                             quantity: product.quantity + 1
                         }
-                        return newProduct
                     }
                 })
             )
@@ -68,6 +69,7 @@ export function CartContextProvider({children}: {children: ReactNode}) {
 
                     const newProduct = {
                         id: product.id,
+                        price: product.price,
                         quantity: product.quantity -1
                     }
 

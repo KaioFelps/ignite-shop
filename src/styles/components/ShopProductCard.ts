@@ -9,7 +9,8 @@ export const ProductCardContainer = styled("div", {
 
 export const ProductImage = styled(Image, {
     width: 100,
-    height: 100,
+    height: "100%",
+    minHeight: 100,
     objectFit: "contain",
     objectPosition: "center",
     borderRadius: 8,
@@ -43,6 +44,14 @@ export const ProductCardFooter = styled("footer", {
         fontWeight: "bold",
         color: "$gray-300",
     }
+})
+
+export const ProductQuantities = styled("span", {
+    fontSize: "$xs",
+    color: "$gray-300",
+    padding: "4px 8px",
+    borderRadius: 6,
+    background: "$gray-900",
 })
 
 export const RemoveProductButton = styled(Button, {

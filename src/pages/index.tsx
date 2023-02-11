@@ -19,7 +19,7 @@ type HomeProps = {
     name: string;
     imageUrl: string;
     price: string;
-
+    defaultPrice: number;
   }[]
 }
 
@@ -52,10 +52,10 @@ export default function Home({products}: HomeProps) {
     }
   }
 
-  function handleAddToCarT(id: string) {
+  function handleAddToCarT(id: string, price: number) {
     setIsAddingToCart(true)
     setTimeout(() => {
-      addProductToCart(id)
+      addProductToCart(id, price)
       setIsAddingToCart(false)
     }, 2000)
   }
@@ -107,7 +107,7 @@ export default function Home({products}: HomeProps) {
                   }}
                   type="button"
                   disabled={isAddingToCart}
-                  onClick={() => handleAddToCarT(product.id)}
+                  onClick={() => handleAddToCarT(product.id, product.defaultPrice)}
                   >
                     <Handbag size={24} weight="bold" />
                   </Button>
@@ -150,6 +150,7 @@ export const getStaticProps: GetStaticProps = async () => {
       name: product.name,
       imageUrl: product.images[0],
       price: convertedPrice,
+      defaultPrice: price.unit_amount! / 100
     }
   })
 
